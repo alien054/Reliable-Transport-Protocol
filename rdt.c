@@ -23,6 +23,14 @@
 /* a "msg" is the data unit passed from layer 5 (teachers code) to layer  */
 /* 4 (students' code).  It contains the data (characters) to be delivered */
 /* to layer 5 via the students transport level protocol entities.         */
+
+#define OFF 0
+#define ON 1
+#define A 0
+#define B 1
+#define wait_for_layer_5 0
+#define wait_for_ack 1
+#define time_to_wait 30
 struct msg
 {
     char data[20];
@@ -47,10 +55,21 @@ void tolayer5(int AorB, char datasent[20]);
 
 /********* STUDENTS WRITE THE NEXT SEVEN ROUTINES *********/
 
+//Global variables for A
+int aSequenceNumber;
+int currentState;
+struct pkt mostRecentPacketSent;
+
+//Global variables for B
+int bSequenceNumber;
+
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
+    printf("\n--------Inside SENDER-------------\n");
+    
 
+    printf("\n--------EXITING SENDER-------------\n");
 }
 
 /* need be completed only for extra credit */
@@ -75,7 +94,9 @@ void A_timerinterrupt(void)
 /* entity A routines are called. You can use it to do any initialization */
 void A_init(void)
 {
-
+    aSequenceNumber = 0;
+    currentState = wait_for_layer_5;
+    mostRecentPacketSent = NULL;
 }
 
 /* Note that with simplex transfer from a-to-B, there is no B_output() */
@@ -83,7 +104,9 @@ void A_init(void)
 /* called from layer 3, when a packet arrives for layer 4 at B*/
 void B_input(struct pkt packet)
 {
-
+    printf("\n--------Inside RECEIVER-------------\n");
+    printf("data: %s\n", packet.payload);
+    printf("\n--------EXITING RECEIVER-------------\n");
 }
 
 /* called when B's timer goes off */
@@ -131,10 +154,7 @@ struct event *evlist = NULL; /* the event list */
 #define FROM_LAYER5 1
 #define FROM_LAYER3 2
 
-#define OFF 0
-#define ON 1
-#define A 0
-#define B 1
+
 
 int TRACE = 1;     /* for my debugging */
 int nsim = 0;      /* number of messages from 5 to 4 so far */
