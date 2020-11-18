@@ -62,6 +62,7 @@ struct pkt mostRecentPacketSent;
 
 //Global variables for B
 int bSequenceNumber;
+struct msg bData;
 
 //Calculate Checksum
 int calculateChecksum(struct pkt packet)
@@ -185,8 +186,10 @@ void B_input(struct pkt packet)
         //Send negative acknowledgement
         struct pkt nack;
         nack.acknum = (bSequenceNumber + 1) % 2; //last valid packet received
+        strcpy(nack.payload, bData.data);
         int checksum = calculateChecksum(nack);
         nack.checksum = checksum;
+        printf("Sending acknowledgement for last received packet\n");
         tolayer3(B, nack);
         printf("\n--------EXITING RECEIVER-------------\n");
 
@@ -200,8 +203,10 @@ void B_input(struct pkt packet)
         //Send negative acknowledgement
         struct pkt nack;
         nack.acknum = (bSequenceNumber + 1) % 2; //last valid packet received
+        strcpy(nack.payload, bData.data);
         int checksum = calculateChecksum(nack);
         nack.checksum = checksum;
+        printf("Sending acknowledgement for last received packet\n");
         tolayer3(B, nack);
         printf("\n--------EXITING RECEIVER-------------\n");
 
@@ -235,6 +240,7 @@ void B_timerinterrupt(void)
 void B_init(void)
 {
     bSequenceNumber = 0;
+    strcpy(bData.data, "1234567890123456789\0");
 }
 
 /*****************************************************************
